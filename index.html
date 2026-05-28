@@ -6,526 +6,132 @@
   <meta name="theme-color" content="#050A10">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="description" content="منصة TradeX لتحليل وتنفيذ الصفقات بشكل ذكي">
   <title>TradeX — منصة التداول الذكية</title>
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-
   <style>
     :root {
-      --bg: #050A10;
-      --surface: #0A1420;
-      --surface-2: #0F1D2E;
-      --border: #1A2D45;
-      --border-2: #243D5A;
-      --cyan: #00D4FF;
-      --green: #00FF87;
-      --red: #FF4560;
-      --yellow: #FFB800;
-      --text: #E8F0FF;
-      --text-2: #8BA3BE;
-      --text-3: #4A6480;
-      --font: 'Outfit', sans-serif;
-      --mono: 'JetBrains Mono', monospace;
-      --radius: 12px;
-      --radius-lg: 20px;
+      --bg:#050A10;--surface:#0A1420;--surface-2:#0F1D2E;
+      --border:#1A2D45;--border-2:#243D5A;
+      --cyan:#00D4FF;--green:#00FF87;--red:#FF4560;--yellow:#FFB800;
+      --text:#E8F0FF;--text-2:#8BA3BE;--text-3:#4A6480;
+      --font:'Outfit',sans-serif;--mono:'JetBrains Mono',monospace;
+      --radius:12px;--radius-lg:20px;
     }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+    .screen{display:none;}.screen.active{display:flex;}
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* LOGIN */
+    #login-screen{min-height:100vh;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+    .grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px);background-size:44px 44px;animation:gridMove 24s linear infinite;}
+    @keyframes gridMove{0%{transform:translateY(0)}100%{transform:translateY(44px)}}
+    .orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.12;pointer-events:none;}
+    .orb-1{width:500px;height:500px;background:var(--cyan);top:-120px;right:-120px;animation:float1 9s ease-in-out infinite;}
+    .orb-2{width:380px;height:380px;background:var(--green);bottom:-80px;left:-80px;animation:float2 11s ease-in-out infinite;}
+    @keyframes float1{0%,100%{transform:translate(0,0)}50%{transform:translate(-25px,25px)}}
+    @keyframes float2{0%,100%{transform:translate(0,0)}50%{transform:translate(20px,-20px)}}
+    .login-card{position:relative;z-index:10;background:rgba(10,20,32,.85);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--border-2);border-radius:var(--radius-lg);padding:48px 40px;width:100%;max-width:420px;margin:20px;box-shadow:0 0 0 1px rgba(0,212,255,.04),0 40px 80px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.04);animation:cardIn .65s cubic-bezier(.16,1,.3,1) forwards;}
+    @keyframes cardIn{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+    .logo{display:flex;align-items:center;gap:12px;margin-bottom:32px;justify-content:center;}
+    .logo-icon{width:46px;height:46px;background:linear-gradient(135deg,var(--cyan),var(--green));border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;color:#050A10;font-family:var(--mono);letter-spacing:-1px;flex-shrink:0;}
+    .logo-text{font-size:28px;font-weight:700;background:linear-gradient(135deg,var(--text),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .login-title{font-size:21px;font-weight:600;text-align:center;margin-bottom:8px;}
+    .login-subtitle{font-size:14px;color:var(--text-2);text-align:center;margin-bottom:32px;line-height:1.7;}
+    .stats-preview{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:28px;}
+    .stat-mini{background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:12px 8px;text-align:center;}
+    .stat-mini .val{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--green);}
+    .stat-mini .lbl{font-size:10px;color:var(--text-3);margin-top:4px;}
+    .divider{height:1px;background:var(--border);margin-bottom:24px;}
+    .btn-google{width:100%;background:var(--surface-2);border:1px solid var(--border-2);border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:center;gap:12px;cursor:pointer;font-family:var(--font);font-size:15px;font-weight:500;color:var(--text);transition:all .22s;position:relative;overflow:hidden;}
+    .btn-google::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,212,255,.08),rgba(0,255,135,.08));opacity:0;transition:opacity .22s;}
+    .btn-google:hover{border-color:var(--cyan);transform:translateY(-1px);box-shadow:0 8px 28px rgba(0,212,255,.13);}
+    .btn-google:hover::before{opacity:1;}
+    .btn-google:active{transform:translateY(0);}
+    .btn-google:disabled{opacity:.55;cursor:not-allowed;transform:none;}
+    .google-icon{width:20px;height:20px;flex-shrink:0;}
+    .login-footer{margin-top:18px;font-size:11.5px;color:var(--text-3);text-align:center;line-height:1.7;}
+    .spinner{width:18px;height:18px;border:2px solid rgba(0,212,255,.25);border-top-color:var(--cyan);border-radius:50%;animation:spin .75s linear infinite;display:inline-block;}
+    @keyframes spin{to{transform:rotate(360deg)}}
 
-    body {
-      font-family: var(--font);
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    .screen { display: none; }
-    .screen.active { display: flex; }
-
-    /* ===== LOGIN ===== */
-    #login-screen {
-      min-height: 100vh;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .grid-bg {
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px);
-      background-size: 44px 44px;
-      animation: gridMove 24s linear infinite;
-    }
-    @keyframes gridMove {
-      0% { transform: translateY(0); }
-      100% { transform: translateY(44px); }
-    }
-
-    .orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(90px);
-      opacity: 0.12;
-      pointer-events: none;
-    }
-    .orb-1 {
-      width: 500px; height: 500px;
-      background: var(--cyan);
-      top: -120px; right: -120px;
-      animation: float1 9s ease-in-out infinite;
-    }
-    .orb-2 {
-      width: 380px; height: 380px;
-      background: var(--green);
-      bottom: -80px; left: -80px;
-      animation: float2 11s ease-in-out infinite;
-    }
-    @keyframes float1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-25px,25px)} }
-    @keyframes float2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(20px,-20px)} }
-
-    .login-card {
-      position: relative;
-      z-index: 10;
-      background: rgba(10,20,32,0.85);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 1px solid var(--border-2);
-      border-radius: var(--radius-lg);
-      padding: 48px 40px;
-      width: 100%;
-      max-width: 420px;
-      margin: 20px;
-      box-shadow:
-        0 0 0 1px rgba(0,212,255,0.04),
-        0 40px 80px rgba(0,0,0,0.55),
-        inset 0 1px 0 rgba(255,255,255,0.04);
-      animation: cardIn 0.65s cubic-bezier(0.16,1,0.3,1) forwards;
-    }
-    @keyframes cardIn {
-      from { opacity:0; transform:translateY(28px); }
-      to   { opacity:1; transform:translateY(0); }
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 32px;
-      justify-content: center;
-    }
-    .logo-icon {
-      width: 46px; height: 46px;
-      background: linear-gradient(135deg, var(--cyan), var(--green));
-      border-radius: 11px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 19px;
-      font-weight: 800;
-      color: #050A10;
-      font-family: var(--mono);
-      letter-spacing: -1px;
-      flex-shrink: 0;
-    }
-    .logo-text {
-      font-size: 28px;
-      font-weight: 700;
-      background: linear-gradient(135deg, var(--text), var(--cyan));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .login-title {
-      font-size: 21px;
-      font-weight: 600;
-      text-align: center;
-      margin-bottom: 8px;
-    }
-    .login-subtitle {
-      font-size: 14px;
-      color: var(--text-2);
-      text-align: center;
-      margin-bottom: 32px;
-      line-height: 1.7;
-    }
-
-    .stats-preview {
-      display: grid;
-      grid-template-columns: repeat(3,1fr);
-      gap: 8px;
-      margin-bottom: 28px;
-    }
-    .stat-mini {
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: 9px;
-      padding: 12px 8px;
-      text-align: center;
-    }
-    .stat-mini .val {
-      font-family: var(--mono);
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--green);
-    }
-    .stat-mini .lbl {
-      font-size: 10px;
-      color: var(--text-3);
-      margin-top: 4px;
-    }
-
-    .divider {
-      height: 1px;
-      background: var(--border);
-      margin-bottom: 24px;
-    }
-
-    .btn-google {
-      width: 100%;
-      background: var(--surface-2);
-      border: 1px solid var(--border-2);
-      border-radius: var(--radius);
-      padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      cursor: pointer;
-      font-family: var(--font);
-      font-size: 15px;
-      font-weight: 500;
-      color: var(--text);
-      transition: all 0.22s;
-      position: relative;
-      overflow: hidden;
-    }
-    .btn-google::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(0,255,135,0.08));
-      opacity: 0;
-      transition: opacity 0.22s;
-    }
-    .btn-google:hover { border-color: var(--cyan); transform: translateY(-1px); box-shadow: 0 8px 28px rgba(0,212,255,0.13); }
-    .btn-google:hover::before { opacity: 1; }
-    .btn-google:active { transform: translateY(0); }
-    .btn-google:disabled { opacity:0.55; cursor:not-allowed; transform:none; }
-    .google-icon { width:20px; height:20px; flex-shrink:0; }
-
-    .login-footer {
-      margin-top: 18px;
-      font-size: 11.5px;
-      color: var(--text-3);
-      text-align: center;
-      line-height: 1.7;
-    }
-
-    .spinner {
-      width:18px; height:18px;
-      border: 2px solid rgba(0,212,255,0.25);
-      border-top-color: var(--cyan);
-      border-radius: 50%;
-      animation: spin 0.75s linear infinite;
-      display: inline-block;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ===== DASHBOARD ===== */
-    #dashboard-screen { flex-direction:column; min-height:100vh; }
-
-    .header {
-      background: rgba(10,20,32,0.9);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-      padding: 0 28px;
-      height: 62px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .h-logo { display:flex; align-items:center; gap:10px; }
-    .h-logo .logo-icon { width:32px;height:32px;font-size:13px;border-radius:7px; }
-    .h-logo .logo-text { font-size:18px; }
-
-    .ticker {
-      display:flex;
-      align-items:center;
-      gap:22px;
-      font-family: var(--mono);
-      font-size: 12px;
-    }
-    .ticker-item { display:flex; align-items:center; gap:6px; }
-    .ticker-item .sym { color:var(--text-3); }
-    .ticker-item .price { color:var(--text); font-weight:500; }
-    .ticker-item .up { color:var(--green); }
-    .ticker-item .dn { color:var(--red); }
-
-    .user-area { display:flex; align-items:center; gap:12px; }
-    .user-avatar {
-      width:34px; height:34px;
-      border-radius:50%;
-      border:2px solid var(--border-2);
-      object-fit:cover;
-      background: var(--surface-2);
-    }
-    .user-name {
-      font-size:13px; font-weight:500;
-      max-width:120px;
-      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-    }
-    .btn-logout {
-      background:transparent;
-      border: 1px solid var(--border);
-      border-radius:8px;
-      padding:6px 13px;
-      font-family:var(--font);
-      font-size:12px;
-      color:var(--text-2);
-      cursor:pointer;
-      transition:all 0.2s;
-    }
-    .btn-logout:hover { border-color:var(--red); color:var(--red); }
-
-    .main { flex:1; padding:28px; max-width:1200px; margin:0 auto; width:100%; }
-
-    /* Announcement bar */
-    .announce-bar {
-      background: linear-gradient(90deg, rgba(0,212,255,0.08), rgba(0,255,135,0.08));
-      border: 1px solid rgba(0,212,255,0.2);
-      border-radius: 10px;
-      padding: 12px 20px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 24px;
-      font-size: 13px;
-      color: var(--text-2);
-      animation: fadeUp 0.4s ease forwards;
-    }
-    .announce-dot {
-      width:8px; height:8px;
-      background: var(--cyan);
-      border-radius:50%;
-      flex-shrink:0;
-      animation: pulse 2s ease infinite;
-    }
-    @keyframes pulse {
-      0%,100% { box-shadow: 0 0 0 0 rgba(0,212,255,0.4); }
-      50% { box-shadow: 0 0 0 6px rgba(0,212,255,0); }
-    }
-
-    /* Welcome banner */
-    .welcome-banner {
-      background: linear-gradient(135deg, var(--surface), var(--surface-2));
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 28px 32px;
-      margin-bottom: 24px;
-      position: relative;
-      overflow: hidden;
-      animation: fadeUp 0.45s ease forwards;
-    }
-    .welcome-banner::after {
-      content:'📈';
-      position:absolute;
-      left:28px; top:50%;
-      transform:translateY(-50%);
-      font-size:68px;
-      opacity:0.06;
-      pointer-events:none;
-    }
-    @keyframes fadeUp {
-      from { opacity:0; transform:translateY(14px); }
-      to   { opacity:1; transform:translateY(0); }
-    }
-    .badge-pill {
-      display:inline-flex; align-items:center;
-      background:rgba(0,212,255,0.1);
-      border:1px solid rgba(0,212,255,0.25);
-      border-radius:20px;
-      padding:4px 14px;
-      font-size:11px; color:var(--cyan);
-      font-weight:500; margin-bottom:14px;
-    }
-    .welcome-title { font-size:21px; font-weight:600; margin-bottom:6px; }
-    .welcome-sub { font-size:14px; color:var(--text-2); line-height:1.7; }
-
-    /* Stats grid */
-    .stats-grid {
-      display:grid;
-      grid-template-columns:repeat(auto-fit, minmax(190px,1fr));
-      gap:16px;
-      margin-bottom:24px;
-    }
-    .stat-card {
-      background:var(--surface);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      padding:22px;
-      animation:fadeUp 0.5s ease forwards;
-      transition:border-color 0.2s, transform 0.2s;
-    }
-    .stat-card:hover { border-color:var(--border-2); transform:translateY(-2px); }
-    .stat-label { font-size:11px; color:var(--text-3); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.6px; }
-    .stat-value { font-family:var(--mono); font-size:22px; font-weight:600; margin-bottom:6px; }
-    .stat-value.cyan { color:var(--cyan); }
-    .stat-value.green { color:var(--green); }
-    .stat-value.muted { color:var(--text-3); }
-    .stat-sub { font-size:12px; color:var(--text-3); }
-
-    /* Connect card */
-    .connect-card {
-      background:var(--surface);
-      border:1px solid var(--border);
-      border-radius:var(--radius-lg);
-      padding:36px;
-      text-align:center;
-      animation:fadeUp 0.55s ease forwards;
-    }
-    .connect-icon {
-      width:68px; height:68px;
-      background:rgba(0,212,255,0.08);
-      border:1px solid rgba(0,212,255,0.18);
-      border-radius:18px;
-      display:flex; align-items:center; justify-content:center;
-      font-size:30px;
-      margin:0 auto 22px;
-    }
-    .connect-title { font-size:18px; font-weight:600; margin-bottom:10px; }
-    .connect-text { font-size:14px; color:var(--text-2); margin-bottom:26px; line-height:1.8; }
-    .brokers-flex {
-      display:flex; flex-wrap:wrap;
-      justify-content:center; gap:10px;
-      margin-bottom:26px;
-    }
-    .broker-chip {
-      background:var(--surface-2);
-      border:1px solid var(--border);
-      border-radius:8px;
-      padding:8px 16px;
-      font-size:13px; color:var(--text-2); font-weight:500;
-    }
-    .btn-connect {
-      background:linear-gradient(135deg, var(--cyan), #0099CC);
-      border:none; border-radius:var(--radius);
-      padding:13px 32px;
-      font-family:var(--font); font-size:15px; font-weight:600;
-      color:#050A10; cursor:not-allowed; opacity:0.45;
-    }
-    .badge-soon {
-      display:inline-flex; align-items:center; gap:6px;
-      background:rgba(255,184,0,0.1);
-      border:1px solid rgba(255,184,0,0.25);
-      border-radius:20px; padding:6px 16px;
-      font-size:12px; color:var(--yellow); font-weight:500;
-      margin-top:18px;
-    }
-
-    /* Toast */
-    .toast {
-      position:fixed; bottom:28px; left:50%;
-      transform:translateX(-50%) translateY(120px);
-      background:var(--surface-2);
-      border:1px solid var(--red);
-      border-radius:10px;
-      padding:12px 22px;
-      font-size:13px; color:var(--red);
-      z-index:1000;
-      transition:transform 0.3s cubic-bezier(0.16,1,0.3,1);
-      white-space:nowrap;
-    }
-    .toast.show { transform:translateX(-50%) translateY(0); }
-
-    /* Loading overlay */
-    .loading-overlay {
-      position:fixed; inset:0;
-      background:var(--bg);
-      display:flex; align-items:center; justify-content:center;
-      z-index:999;
-      transition:opacity 0.4s;
-    }
-    .loading-overlay.fade { opacity:0; pointer-events:none; }
-    .loading-logo {
-      display:flex; flex-direction:column; align-items:center; gap:20px;
-    }
-    .loading-logo .logo-icon {
-      width:56px; height:56px;
-      font-size:22px;
-      animation:logoPulse 1.5s ease-in-out infinite;
-    }
-    @keyframes logoPulse {
-      0%,100%{transform:scale(1); opacity:1;}
-      50%{transform:scale(1.08); opacity:0.8;}
-    }
-
-    @media(max-width:680px){
-      .ticker { display:none; }
-      .main { padding:16px; }
-      .login-card { padding:32px 22px; }
-      .stats-grid { grid-template-columns:1fr 1fr; }
-      .welcome-banner { padding:22px; }
-      .connect-card { padding:24px; }
-      .user-name { display:none; }
-    }
+    /* DASHBOARD */
+    #dashboard-screen{flex-direction:column;min-height:100vh;}
+    .header{background:rgba(10,20,32,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 28px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+    .h-logo{display:flex;align-items:center;gap:10px;}
+    .ticker{display:flex;align-items:center;gap:22px;font-family:var(--mono);font-size:12px;}
+    .ticker-item{display:flex;align-items:center;gap:6px;}
+    .ticker-item .sym{color:var(--text-3);}
+    .ticker-item .price{color:var(--text);font-weight:500;}
+    .ticker-item .up{color:var(--green);}
+    .ticker-item .dn{color:var(--red);}
+    .user-area{display:flex;align-items:center;gap:12px;}
+    .user-avatar{width:34px;height:34px;border-radius:50%;border:2px solid var(--border-2);object-fit:cover;background:var(--surface-2);}
+    .user-name{font-size:13px;font-weight:500;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .btn-logout{background:transparent;border:1px solid var(--border);border-radius:8px;padding:6px 13px;font-family:var(--font);font-size:12px;color:var(--text-2);cursor:pointer;transition:all .2s;}
+    .btn-logout:hover{border-color:var(--red);color:var(--red);}
+    .main{flex:1;padding:28px;max-width:1200px;margin:0 auto;width:100%;}
+    .announce-bar{background:linear-gradient(90deg,rgba(0,212,255,.08),rgba(0,255,135,.08));border:1px solid rgba(0,212,255,.2);border-radius:10px;padding:12px 20px;display:flex;align-items:center;gap:12px;margin-bottom:24px;font-size:13px;color:var(--text-2);animation:fadeUp .4s ease forwards;}
+    .announce-dot{width:8px;height:8px;background:var(--cyan);border-radius:50%;flex-shrink:0;animation:pulse 2s ease infinite;}
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,212,255,.4)}50%{box-shadow:0 0 0 6px rgba(0,212,255,0)}}
+    .welcome-banner{background:linear-gradient(135deg,var(--surface),var(--surface-2));border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px 32px;margin-bottom:24px;position:relative;overflow:hidden;animation:fadeUp .45s ease forwards;}
+    .welcome-banner::after{content:'📈';position:absolute;left:28px;top:50%;transform:translateY(-50%);font-size:68px;opacity:.06;pointer-events:none;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+    .badge-pill{display:inline-flex;align-items:center;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.25);border-radius:20px;padding:4px 14px;font-size:11px;color:var(--cyan);font-weight:500;margin-bottom:14px;}
+    .welcome-title{font-size:21px;font-weight:600;margin-bottom:6px;}
+    .welcome-sub{font-size:14px;color:var(--text-2);line-height:1.7;}
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;margin-bottom:24px;}
+    .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;animation:fadeUp .5s ease forwards;transition:border-color .2s,transform .2s;}
+    .stat-card:hover{border-color:var(--border-2);transform:translateY(-2px);}
+    .stat-label{font-size:11px;color:var(--text-3);margin-bottom:10px;text-transform:uppercase;letter-spacing:.6px;}
+    .stat-value{font-family:var(--mono);font-size:22px;font-weight:600;margin-bottom:6px;}
+    .stat-value.cyan{color:var(--cyan);}
+    .stat-value.green{color:var(--green);}
+    .stat-value.muted{color:var(--text-3);}
+    .stat-sub{font-size:12px;color:var(--text-3);}
+    .connect-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:36px;text-align:center;animation:fadeUp .55s ease forwards;}
+    .connect-icon{width:68px;height:68px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.18);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 22px;}
+    .connect-title{font-size:18px;font-weight:600;margin-bottom:10px;}
+    .connect-text{font-size:14px;color:var(--text-2);margin-bottom:26px;line-height:1.8;}
+    .brokers-flex{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-bottom:26px;}
+    .broker-chip{background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:8px 16px;font-size:13px;color:var(--text-2);font-weight:500;}
+    .btn-connect{background:linear-gradient(135deg,var(--cyan),#0099CC);border:none;border-radius:var(--radius);padding:13px 32px;font-family:var(--font);font-size:15px;font-weight:600;color:#050A10;cursor:not-allowed;opacity:.45;}
+    .badge-soon{display:inline-flex;align-items:center;gap:6px;background:rgba(255,184,0,.1);border:1px solid rgba(255,184,0,.25);border-radius:20px;padding:6px 16px;font-size:12px;color:var(--yellow);font-weight:500;margin-top:18px;}
+    .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--surface-2);border:1px solid var(--red);border-radius:10px;padding:12px 22px;font-size:13px;color:var(--red);z-index:1000;transition:transform .3s cubic-bezier(.16,1,.3,1);white-space:nowrap;}
+    .toast.show{transform:translateX(-50%) translateY(0);}
+    .loading-overlay{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;transition:opacity .4s;}
+    .loading-overlay.fade{opacity:0;pointer-events:none;}
+    @keyframes logoPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.08);opacity:.8}}
+    @media(max-width:680px){.ticker{display:none;}.main{padding:16px;}.login-card{padding:32px 22px;}.stats-grid{grid-template-columns:1fr 1fr;}.welcome-banner{padding:22px;}.connect-card{padding:24px;}.user-name{display:none;}}
   </style>
 </head>
 <body>
 
-  <!-- Loading -->
   <div class="loading-overlay" id="loadingOverlay">
-    <div class="loading-logo">
-      <div class="logo-icon" style="width:56px;height:56px;background:linear-gradient(135deg,#00D4FF,#00FF87);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#050A10;font-family:'JetBrains Mono',monospace;">TX</div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:20px;">
+      <div class="logo-icon" style="width:56px;height:56px;background:linear-gradient(135deg,#00D4FF,#00FF87);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#050A10;font-family:'JetBrains Mono',monospace;animation:logoPulse 1.5s ease-in-out infinite;">TX</div>
       <div class="spinner"></div>
     </div>
   </div>
 
-  <!-- ===== LOGIN ===== -->
+  <!-- LOGIN -->
   <div id="login-screen" class="screen">
     <div class="grid-bg"></div>
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
-
     <div class="login-card">
       <div class="logo">
         <div class="logo-icon">TX</div>
         <div class="logo-text">TradeX</div>
       </div>
-
       <div class="login-title">ابدأ رحلتك في التداول الذكي</div>
       <div class="login-subtitle">منصة متكاملة لتحليل وتنفيذ الصفقات<br>على حسابك الشخصي — ديمو أو حقيقي</div>
-
       <div class="stats-preview">
-        <div class="stat-mini">
-          <div class="val">12+</div>
-          <div class="lbl">وسيط مدعوم</div>
-        </div>
-        <div class="stat-mini">
-          <div class="val">95%</div>
-          <div class="lbl">دقة التحليل</div>
-        </div>
-        <div class="stat-mini">
-          <div class="val">24/7</div>
-          <div class="lbl">تداول مستمر</div>
-        </div>
+        <div class="stat-mini"><div class="val">12+</div><div class="lbl">وسيط مدعوم</div></div>
+        <div class="stat-mini"><div class="val">95%</div><div class="lbl">دقة التحليل</div></div>
+        <div class="stat-mini"><div class="val">24/7</div><div class="lbl">تداول مستمر</div></div>
       </div>
-
       <div class="divider"></div>
-
       <button class="btn-google" id="loginBtn" onclick="handleGoogleLogin()">
         <svg class="google-icon" viewBox="0 0 24 24">
           <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -535,88 +141,48 @@
         </svg>
         تسجيل الدخول بـ Google
       </button>
-
-      <div class="login-footer">
-        بتسجيل دخولك توافق على شروط الاستخدام وسياسة الخصوصية
-      </div>
+      <div class="login-footer">بتسجيل دخولك توافق على شروط الاستخدام وسياسة الخصوصية</div>
     </div>
   </div>
 
-  <!-- ===== DASHBOARD ===== -->
+  <!-- DASHBOARD -->
   <div id="dashboard-screen" class="screen">
     <header class="header">
       <div class="h-logo">
         <div class="logo-icon" style="width:32px;height:32px;background:linear-gradient(135deg,#00D4FF,#00FF87);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#050A10;font-family:'JetBrains Mono',monospace;">TX</div>
         <span class="logo-text" style="font-size:18px;">TradeX</span>
       </div>
-
       <div class="ticker">
-        <div class="ticker-item">
-          <span class="sym">BTC</span>
-          <span class="price" id="btcPrice">67,245</span>
-          <span class="up">+2.3%</span>
-        </div>
-        <div class="ticker-item">
-          <span class="sym">EUR/USD</span>
-          <span class="price">1.0842</span>
-          <span class="dn">-0.12%</span>
-        </div>
-        <div class="ticker-item">
-          <span class="sym">GOLD</span>
-          <span class="price">2,341</span>
-          <span class="up">+0.81%</span>
-        </div>
+        <div class="ticker-item"><span class="sym">BTC</span><span class="price">67,245</span><span class="up">+2.3%</span></div>
+        <div class="ticker-item"><span class="sym">EUR/USD</span><span class="price">1.0842</span><span class="dn">-0.12%</span></div>
+        <div class="ticker-item"><span class="sym">GOLD</span><span class="price">2,341</span><span class="up">+0.81%</span></div>
       </div>
-
       <div class="user-area">
-        <img id="userAvatar" class="user-avatar" src="" alt="avatar" onerror="this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\'><circle cx=\'12\' cy=\'12\' r=\'12\' fill=\'%230F1D2E\'/></svg>'">
+        <img id="userAvatar" class="user-avatar" src="" alt="">
         <span id="userName" class="user-name"></span>
         <button class="btn-logout" onclick="handleLogout()">خروج</button>
       </div>
     </header>
-
     <main class="main">
       <div class="announce-bar">
         <div class="announce-dot"></div>
         <span>المرحلة 1 مكتملة — تسجيل الدخول يعمل بنجاح. قريباً: ربط حساب التداول والاستراتيجيات</span>
       </div>
-
       <div class="welcome-banner">
         <div class="badge-pill">✦ حساب جديد</div>
         <div class="welcome-title" id="welcomeText">مرحباً! 👋</div>
         <div class="welcome-sub">حسابك جاهز — الخطوة التالية ستكون ربط وسيطك وتفعيل الاشتراك</div>
       </div>
-
       <div class="stats-grid">
-        <div class="stat-card" style="animation-delay:0.05s">
-          <div class="stat-label">حالة الاشتراك</div>
-          <div class="stat-value muted">—</div>
-          <div class="stat-sub">في انتظار التفعيل</div>
-        </div>
-        <div class="stat-card" style="animation-delay:0.1s">
-          <div class="stat-label">حساب التداول</div>
-          <div class="stat-value muted">—</div>
-          <div class="stat-sub">لم يتم الربط بعد</div>
-        </div>
-        <div class="stat-card" style="animation-delay:0.15s">
-          <div class="stat-label">الصفقات المنفذة</div>
-          <div class="stat-value cyan">0</div>
-          <div class="stat-sub">هذا الشهر</div>
-        </div>
-        <div class="stat-card" style="animation-delay:0.2s">
-          <div class="stat-label">الاستراتيجيات</div>
-          <div class="stat-value cyan">0</div>
-          <div class="stat-sub">استراتيجية مفعّلة</div>
-        </div>
+        <div class="stat-card"><div class="stat-label">حالة الاشتراك</div><div class="stat-value muted">—</div><div class="stat-sub">في انتظار التفعيل</div></div>
+        <div class="stat-card"><div class="stat-label">حساب التداول</div><div class="stat-value muted">—</div><div class="stat-sub">لم يتم الربط بعد</div></div>
+        <div class="stat-card"><div class="stat-label">الصفقات المنفذة</div><div class="stat-value cyan">0</div><div class="stat-sub">هذا الشهر</div></div>
+        <div class="stat-card"><div class="stat-label">الاستراتيجيات</div><div class="stat-value cyan">0</div><div class="stat-sub">استراتيجية مفعّلة</div></div>
       </div>
-
       <div class="connect-card">
         <div class="connect-icon">🔗</div>
         <div class="connect-title">ربط حساب التداول</div>
-        <div class="connect-text">
-          اختر وسيطك المفضل وأدخل بيانات API الخاصة بك<br>
-          ندعم جميع منصات التداول الرئيسية — ديمو أو حقيقي
-        </div>
+        <div class="connect-text">اختر وسيطك المفضل وأدخل بيانات API الخاصة بك<br>ندعم جميع منصات التداول الرئيسية — ديمو أو حقيقي</div>
         <div class="brokers-flex">
           <span class="broker-chip">MT4 / MT5</span>
           <span class="broker-chip">Binance</span>
@@ -632,68 +198,55 @@
 
   <div class="toast" id="toast"></div>
 
-  <!-- Firebase v9 compat CDN -->
+  <!-- Firebase Auth فقط — بدون Firestore -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
   <script>
-    // ==========================================================
-    // ⚙️  FIREBASE CONFIG
-    // استبدل هذه القيم بإعدادات مشروع Firebase الخاص بك
-    // ==========================================================
+    // ============================================================
+    // ⚙️ ضع هنا إعدادات Firebase الخاصة بك
+    // ============================================================
     const firebaseConfig = {
-      apiKey:            "REPLACE_WITH_YOUR_API_KEY",
-      authDomain:        "REPLACE_WITH_YOUR_AUTH_DOMAIN",
-      projectId:         "REPLACE_WITH_YOUR_PROJECT_ID",
-      storageBucket:     "REPLACE_WITH_YOUR_STORAGE_BUCKET",
-      messagingSenderId: "REPLACE_WITH_YOUR_SENDER_ID",
-      appId:             "REPLACE_WITH_YOUR_APP_ID"
+      apiKey:            "REPLACE_apiKey",
+      authDomain:        "REPLACE_authDomain",
+      projectId:         "REPLACE_projectId"
     };
-    // ==========================================================
+    // ============================================================
 
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db   = firebase.firestore();
+    const auth     = firebase.auth();
     const provider = new firebase.auth.GoogleAuthProvider();
 
-    // ---- helpers ----
-    function showScreen(id) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    function showScreen(id){
+      document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
     }
-
-    function hideLoading() {
-      const ol = document.getElementById('loadingOverlay');
+    function hideLoading(){
+      const ol=document.getElementById('loadingOverlay');
       ol.classList.add('fade');
-      setTimeout(() => ol.remove(), 450);
+      setTimeout(()=>ol.remove(),450);
+    }
+    function showToast(msg){
+      const t=document.getElementById('toast');
+      t.textContent=msg; t.classList.add('show');
+      setTimeout(()=>t.classList.remove('show'),3500);
     }
 
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 3500);
+    // حفظ المستخدم في localStorage فقط
+    function saveUser(user){
+      localStorage.setItem('tx_user', JSON.stringify({
+        uid:   user.uid,
+        name:  user.displayName,
+        email: user.email,
+        photo: user.photoURL,
+        joinedAt: new Date().toISOString()
+      }));
     }
 
-    // ---- auth state ----
-    auth.onAuthStateChanged(async user => {
-      if (user) {
-        try {
-          await db.collection('users').doc(user.uid).set({
-            name:         user.displayName,
-            email:        user.email,
-            photo:        user.photoURL,
-            lastLogin:    firebase.firestore.FieldValue.serverTimestamp(),
-            subscription: 'inactive'
-          }, { merge: true });
-
-          await db.collection('users').doc(user.uid).set({
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-          }, { merge: true });
-        } catch(e) { console.warn('Firestore:', e); }
-
-        document.getElementById('userAvatar').src   = user.photoURL || '';
+    auth.onAuthStateChanged(user => {
+      if(user){
+        saveUser(user);
+        document.getElementById('userAvatar').src = user.photoURL || '';
         document.getElementById('userName').textContent = user.displayName?.split(' ')[0] || 'مستخدم';
         document.getElementById('welcomeText').textContent = `مرحباً، ${user.displayName?.split(' ')[0]}! 👋`;
         showScreen('dashboard-screen');
@@ -703,32 +256,29 @@
       hideLoading();
     });
 
-    // ---- login ----
-    async function handleGoogleLogin() {
-      const btn = document.getElementById('loginBtn');
-      btn.disabled = true;
-      btn.innerHTML = `<div class="spinner"></div>&nbsp; جارٍ تسجيل الدخول...`;
-      try {
+    async function handleGoogleLogin(){
+      const btn=document.getElementById('loginBtn');
+      btn.disabled=true;
+      btn.innerHTML=`<div class="spinner"></div>&nbsp; جارٍ تسجيل الدخول...`;
+      try{
         await auth.signInWithPopup(provider);
-      } catch(err) {
-        console.error(err);
-        let msg = 'فشل تسجيل الدخول — حاول مجدداً';
-        if (err.code === 'auth/popup-blocked') msg = 'يرجى السماح بالنوافذ المنبثقة';
-        if (err.code === 'auth/popup-closed-by-user') msg = 'تم إغلاق النافذة — حاول مجدداً';
+      }catch(err){
+        let msg='فشل تسجيل الدخول — حاول مجدداً';
+        if(err.code==='auth/popup-blocked') msg='يرجى السماح بالنوافذ المنبثقة';
+        if(err.code==='auth/popup-closed-by-user') msg='تم إغلاق النافذة — حاول مجدداً';
         showToast(msg);
-        btn.disabled = false;
-        btn.innerHTML = `<svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> تسجيل الدخول بـ Google`;
+        btn.disabled=false;
+        btn.innerHTML=`<svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg> تسجيل الدخول بـ Google`;
       }
     }
 
-    // ---- logout ----
-    async function handleLogout() {
+    async function handleLogout(){
       await auth.signOut();
+      localStorage.removeItem('tx_user');
     }
 
-    // ---- PWA ----
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').catch(() => {});
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.register('sw.js').catch(()=>{});
     }
   </script>
 </body>
